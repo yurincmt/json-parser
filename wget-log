@@ -1,0 +1,16 @@
+--2024-02-05 11:30:30--  https://www.dropbox.com/scl/fi/d4zs6aoq6hr3oew2b6a9v/test.txt?rlkey=20c9d257pxd5emjjzd1gcbn03
+Resolving www.dropbox.com (www.dropbox.com)... 162.125.5.18, 2620:100:601d:18::a27d:512
+Connecting to www.dropbox.com (www.dropbox.com)|162.125.5.18|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://uca0c1a0ab5903ae7918d777f1fb.dl.dropboxusercontent.com/cd/0/inline/CMvcw_qSxcE7Pa283eXeoVqxmborIS3Yhtf121VNZ0Vj-hhyRepz9kbVbiXc4OlNUlbP3ajbyuyBRXjW0LTaYTNAsBQLhakUWuokHbJxHoy1kfi8YCmP65aL3RgQL_oqHT0/file# [following]
+--2024-02-05 11:30:32--  https://uca0c1a0ab5903ae7918d777f1fb.dl.dropboxusercontent.com/cd/0/inline/CMvcw_qSxcE7Pa283eXeoVqxmborIS3Yhtf121VNZ0Vj-hhyRepz9kbVbiXc4OlNUlbP3ajbyuyBRXjW0LTaYTNAsBQLhakUWuokHbJxHoy1kfi8YCmP65aL3RgQL_oqHT0/file
+Resolving uca0c1a0ab5903ae7918d777f1fb.dl.dropboxusercontent.com (uca0c1a0ab5903ae7918d777f1fb.dl.dropboxusercontent.com)... 162.125.5.15, 2620:100:601d:15::a27d:50f
+Connecting to uca0c1a0ab5903ae7918d777f1fb.dl.dropboxusercontent.com (uca0c1a0ab5903ae7918d777f1fb.dl.dropboxusercontent.com)|162.125.5.15|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 342190 (334K) [text/plain]
+Saving to: ‘test.txt?rlkey=20c9d257pxd5emjjzd1gcbn03’
+
+           test.txt?r   0%[                         ]       0  --.-KB/s                         test.txt?rl   6%[>                        ]  22.91K   113KB/s                        test.txt?rlk  26%[=====>                   ]  86.91K   203KB/s                       test.txt?rlke  64%[===============>         ] 216.00K   342KB/s               test.txt?rlkey=20c9d2 100%[========================>] 334.17K   470KB/s    in 0.7s    
+
+2024-02-05 11:30:34 (470 KB/s) - ‘test.txt?rlkey=20c9d257pxd5emjjzd1gcbn03’ saved [342190/342190]
+
