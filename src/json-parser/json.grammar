@@ -1,0 +1,25 @@
+
+json            --> <value>
+
+<value>         --> <object>? <array>? <string>? <number>? <literal>?
+
+<object>        --> "{" <members> "}"
+                  | "{" "}"
+
+<members>       --> <key> ":" <value> "," <members>
+                  | <key> ":" <value>
+                  |
+
+<array>         --> "[" <values> "]"
+                  | "[" "]"
+
+<values>        --> <value> "," <values
+                  | <value>
+
+<key>           --> <string>
+
+<string>        --> "string"
+
+<literal>       --> true | false | null
+
+<number>        --> number
