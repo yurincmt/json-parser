@@ -1,4 +1,5 @@
-#include "lex.c"
+#ifndef PARSER
+#define PARSER
 
 int json(void);
 int value(void);
@@ -10,6 +11,9 @@ int key(void);
 int string(void);
 int literal(void);
 int number(void);
-int currentTokenIs(char const * token);
-int validateCurrentToken(char* tokenMustBe);
 void parser(FILE* fptr);
+void parserError(char* dbmsg);
+int validateCurrentToken(char* tokenMustBe);
+FILE* parserFile(void);
+
+#endif

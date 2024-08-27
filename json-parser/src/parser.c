@@ -1,15 +1,22 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "lex.h"
 #include "parser.h"
 
-#define DEBUG 1
 #define false 0
 #define true 1
+#define DEBUG 1
 
 Token* currentToken = NULL;
 int identCount = 0;
-FILE* fptr = NULL;
+FILE* globalFptr = NULL;
 
-void ParserError(char* dbmsg) {
+FILE* parserFile(void) {
+    return globalFptr; 
+}
+
+void parserError(char* dbmsg) {
     fprintf(stderr, "Semantic error: %s\n", dbmsg);
     exit(EXIT_FAILURE);
 }
@@ -20,18 +27,19 @@ int json(void) {
 }
 
 int value(void) {
-    if (currentTokenIs("{")) {
+    int TOKENTYPE = Token_type(currentToken);
+    if (TOKENTYPE == LEFTCURLYBRACKET) {
         object();
-    } else if (currentTokenIs("[")) {
+    } else if (TOKENTYPE == LEFTSQUAREBRACKET) {
         array();
-    } else if (currentToken->tokenType == STRING) {
+    } else if (TOKENTYPE == STRING) {
         string();
-    } else if (currentToken->tokenType == LITERAL) {
+    } else if (TOKENTYPE == LITERAL) {
         literal();
-    } else if (currentToken->tokenType == NUMBER) {
+    } else if (TOKENTYPE == NUMBER) {
         number();
     } else {
-        ParserError("value(); Token desconhecido");
+        parserError("value(); Token desconhecido");
     }
 }
 
@@ -55,7 +63,7 @@ int array(void) {
 
 int values(void) {
     value();
-    if (currentTokenIs(",")) {
+    if (Token_type(currentToken) == COMMA) {
         validateCurrentToken(",");
         values();
     }return true;
@@ -65,7 +73,7 @@ int members(void) {
     key();
     validateCurrentToken(":");
     value();
-    if (currentTokenIs(",")) {
+    if (Token_type(currentToken) == COMMA) {
         validateCurrentToken(",");
         members();
     }
@@ -78,24 +86,24 @@ int key(void) {
 }
 
 int string(void) {
-    if (currentToken->tokenType == STRING) {
-        validateCurrentToken(currentToken->token);
+    if (Token_type(currentToken) == STRING) {
+        validateCurrentToken(Token_token(currentToken));
         return true;
-    } ParserError("Esperava-se um token do tipo STRING");
+    } parserError("Esperava-se um token do tipo STRING");
 }
 
 int literal(void) {
-    if(currentToken->tokenType == LITERAL) {
-        validateCurrentToken(currentToken->token);
+    if(Token_type(currentToken) == LITERAL) {
+        validateCurrentToken(Token_token(currentToken));
         return true;
-    } ParserError("Esperava-se um token do tipo LITERAL");
+    } parserError("Esperava-se um token do tipo LITERAL");
 }
 
 int number(void) {
-    if(currentToken->tokenType == NUMBER) {
-        validateCurrentToken(currentToken->token);
+    if(Token_type(currentToken) == NUMBER) {
+        validateCurrentToken(Token_token(currentToken));
         return true;
-    } ParserError("Esperava-se um token do tipo NUMBER");
+    } parserError("Esperava-se um token do tipo NUMBER");
 }
 
 /**
@@ -105,36 +113,22 @@ int number(void) {
  */
 int validateCurrentToken(char* tokenMustBe) {
     char dbmsg[128];
-    if (!strcmp(currentToken->token, tokenMustBe)) {
+    if (!strcmp(Token_token(currentToken), tokenMustBe)) {
         if (DEBUG) {
-            sprintf(dbmsg, "[Validando Token] TokenType: {%s}, Token: {%s}", StrTokenType[currentToken->tokenType], currentToken->token);
+            sprintf(dbmsg, "[Validando Token] TokenType: {%s}, Token: {%s}", strTokenType(currentToken), Token_token(currentToken));
             printf("%*s\n", strlen(dbmsg)+identCount, dbmsg);
         }
-        currentToken = next_token(fptr);
+        currentToken = next_token(parserFile());
         return true;
     }
-    sprintf(dbmsg, "validateCurrentToken(); Token esperado {%s}, token recebido {%s}", tokenMustBe, currentToken->token);
-    ParserError(dbmsg);
+    sprintf(dbmsg, "validateCurrentToken(); Token esperado {%s}, token recebido {%s}", tokenMustBe, Token_token(currentToken));
+    parserError(dbmsg);
     exit(EXIT_FAILURE);
 }
 
-int currentTokenIs(char const * token) {
-    return !strncmp(currentToken->token, token, 1);
-}
-
 void parser(FILE* fptr) {
+    globalFptr = fptr;
     currentToken = next_token(fptr);    // Pega o primeiro token do arquivo
 
     json();
-}
-
-int main(int argc, char const *argv[])
-{
-    char const * filename = argv[1];
-    // filename = "input2.json";
-    fptr = openFile(filename);
-
-    parser(fptr);
-
-    return 0;
 }

@@ -2,23 +2,41 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "lex.h"
 
-
-typedef enum lextokentype {
-    DELIMITER,       // [({])],:
-    STRING,          // "..."
-    LITERAL,         // true false null
-    NUMBER,          // [0-9]+
-} LexTokenType;
-const char* StrTokenType[4] = {"DELIMITER", "STRING", "LITERAL", "NUMBER"};
-
-typedef struct {
+ struct token {
     char* token;
     LexTokenType tokenType;
-} Token;
+};
+
+char* STRTOKENTYPE[9] = {
+    "LEFTCURLYBRACKET",
+    "RIGHTCURLYBRACKET",
+    "LEFTSQUAREBRACKET",
+    "RIGHTSQUAREBRACKET",
+    "COMMA",
+    "COLON",
+    "STRING",
+    "LITERAL",
+    "NUMBER",
+};
+
+char* strTokenType(Token* tk) {
+    return STRTOKENTYPE[tk->tokenType];
+}
+
+char* Token_token(Token* tk) {
+    return tk->token;
+}
+int Token_type(Token* tk) {
+    return tk->tokenType;
+}
+int Token_chrmpc(Token* tk, const char c) {
+    return !strncmp(tk->token, &c, 1);
+}
 
 void tokenPrint(Token* token) {
-    printf("Token: %s, Type: %s\n", token->token, StrTokenType[token->tokenType]);
+    printf("Token: %s, Type: %s\n", token->token, STRTOKENTYPE[token->tokenType]);
 }
 
 void lexError(const char* dbmsg) {
@@ -35,8 +53,25 @@ Token* tokenAlloc(char* tmptoken, int tokenlen, int tokenType) {
 }
 
 Token* get_delimiter(FILE* fptr){
+    int TYPE = 0;
     char c = fgetc(fptr);
-    return tokenAlloc(&c, 1, DELIMITER);
+    switch (c) {
+    case '{':
+        TYPE = LEFTCURLYBRACKET; break;
+    case '}':
+        TYPE = RIGHTCURLYBRACKET; break;
+    case '[':
+        TYPE = LEFTSQUAREBRACKET; break;
+    case ']':
+        TYPE = RIGHTSQUAREBRACKET; break;
+    case ',':
+        TYPE = COMMA; break;
+    case ':':
+        TYPE = COLON; break;
+    default:
+        break;
+    }
+    return tokenAlloc(&c, 1, TYPE);
 }
 
 Token* get_string(FILE* fptr){
@@ -148,13 +183,6 @@ Token* next_token(FILE* fptr) {
     }
 }
 
-FILE* openFile(char const* filename) {
-    FILE* fptr = NULL;
-
-    if ((fptr  = fopen(filename, "r")) == NULL) {
-        lexError("lex() function");
-    } return fptr;
-}
 
 int lex(char const * filename) {
     FILE* fptr = NULL;
@@ -169,13 +197,3 @@ int lex(char const * filename) {
         }
     }
 }
-
-// int main(int argc, char const *argv[])
-// {
-//     Token* a;
-//     char const * filename = (argv[1] ? argv[1] : "input.1"); 
-//     printf("filename: %s\n", filename);
-
-//     lex(filename);
-//     return 0;
-// }

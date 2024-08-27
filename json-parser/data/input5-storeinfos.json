@@ -1,0 +1,80 @@
+{
+    "store": {
+      "name": "Tech Store",
+      "location": "Avenida Central, 123, Centro, Rio de Janeiro, RJ, Brasil",
+      "categories": [
+        {
+          "id": "c1",
+          "name": "Eletrônicos",
+          "products": [
+            {
+              "id": "p1",
+              "name": "Smartphone XYZ",
+              "price": 1999.99,
+              "stock": 50,
+              "supplier": {
+                "id": "s1",
+                "name": "Distribuidora Tech",
+                "contact": {
+                  "phone": "+55 21 98765-4321",
+                  "email": "vendas@distribuidoratech.com"
+                }
+              },
+              "specifications": {
+                "color": "Preto",
+                "screenSize": "6.5 polegadas",
+                "battery": "4000mAh",
+                "warranty": "1 ano"
+              }
+            },
+            {
+              "id": "p2",
+              "name": "Laptop ABC",
+              "price": 3599.99,
+              "stock": 30,
+              "supplier": {
+                "id": "s2",
+                "name": "Fornecedora Computech",
+                "contact": {
+                  "phone": "+55 21 87654-3210",
+                  "email": "contato@fornecedora.com"
+                }
+              },
+              "specifications": {
+                "processor": "Intel i7",
+                "ram": "16GB",
+                "storage": "512GB SSD",
+                "warranty": "2 anos"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "name": "Acessórios",
+          "products": [
+            {
+              "id": "p3",
+              "name": "Fone de Ouvido Bluetooth",
+              "price": 299.99,
+              "stock": 100,
+              "supplier": {
+                "id": "s1",
+                "name": "Distribuidora Tech",
+                "contact": {
+                  "phone": "+55 21 98765-4321",
+                  "email": "vendas@distribuidoratech.com"
+                }
+              },
+              "specifications": {
+                "color": "Branco",
+                "batteryLife": "8 horas",
+                "warranty": "6 meses"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+  
