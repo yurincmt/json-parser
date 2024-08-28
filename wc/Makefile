@@ -16,6 +16,7 @@ build: wc
 
 wc: $(OBJ)
 	gcc -o $@ $(OBJ)
+	rm -rf $(OBJ)
 
 ./src/main.o: ./src/main.c $(H_SOURCE)
 	gcc -o $@ $< -c
@@ -24,5 +25,12 @@ wc: $(OBJ)
 	gcc -o $@ $< -c
 
 
+test:
+	./wc -l ./data/test.txt
+	./wc -w ./data/test.txt
+	./wc -m ./data/test.txt
+	./wc ./data/test.txt
+
+
 clean:
-	rm -rf $(OBJ)
+	rm -rf ./wc $(OBJ)
