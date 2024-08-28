@@ -1,8 +1,14 @@
-#include <unistd.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include "wc.h"
 
+void errorMsg(const char* filename) {
+    fprintf(stderr, "ccwc: %s: No such file or directory\n", filename);
+    // printf("ccwc: %s: No such file or directory\n", filename);
+    exit(EXIT_FAILURE);
+}
 
 int countWords(FILE* fd) {
     int wordCounter = 0;
@@ -66,11 +72,6 @@ int countLines(FILE* fd) {
     return lineCounter;
 }
 
-void errorMsg(const char* filename) {
-    printf("ccwc: %s: No such file or directory\n", filename);
-    exit(EXIT_FAILURE);
-}
-
 int optionHandler(FILE* fd, const char* option) {
 
     if(!strcmp(option, "-c")) {
@@ -88,44 +89,4 @@ int optionHandler(FILE* fd, const char* option) {
         printf("ccwc: invalid option -- '%c'\n", option[1]);
         exit(EXIT_FAILURE);
     }
-}
-
-
-int main(int argc, char const *argv[])
-{
-    int ret;
-
-    // opção e arquivo
-    if (argc == 3) {
-        FILE* fd = fopen(argv[2], "r");
-        if (!fd) {
-            errorMsg(argv[2]);
-        }
-
-        ret = optionHandler(fd, argv[1]);
-
-        printf("%d %s\n", ret, argv[2]);
-        fclose(fd);
-
-    } else if (argc == 2) {
-        if (strchr(argv[1], '-') != NULL) {
-            ret = optionHandler(stdin, argv[1]);
-            printf("%d\n", ret);
-            exit(EXIT_SUCCESS);
-        }
-
-        FILE* fd = fopen(argv[1], "r");
-        if (!fd) {
-            errorMsg(argv[1]);
-        }
-
-        int retL = countLines(fd);
-        int retW = countWords(fd);
-        int retB = countBytes(fd);
-
-        printf("%d %d %d %s\n", retL, retW, retB, argv[1]);
-        fclose(fd);
-    }
-
-    exit(0);
 }
