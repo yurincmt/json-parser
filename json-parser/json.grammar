@@ -1,7 +1,5 @@
 
-json            --> <value>
-
-<value>         --> <object>? <array>? <string>? <number>? <literal>?
+json            --> <object> | <array>
 
 <object>        --> "{" <members> "}"
                   | "{" "}"
@@ -15,6 +13,8 @@ json            --> <value>
 
 <values>        --> <value> "," <values
                   | <value>
+
+<value>         --> <object>? <array>? <string>? <number>? <literal>?
 
 <key>           --> <string>
 
