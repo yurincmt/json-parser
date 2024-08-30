@@ -6,7 +6,7 @@
             "type": "cppdbg",         // Tipo de depurador
             "request": "launch",      // Tipo de solicitação de depuração: "launch" ou "attach"
             "program": "${workspaceFolder}/src/${fileBasenameNoExtension}",  // Caminho para o executável que será depurado
-            "args": ["${workspaceFolder}/data/tests/step2/invalid2.json"],               // Argumentos de linha de comando para o programa (vazio por padrão)
+            "args": ["${workspaceFolder}/data/tests/step1/valid.json"],               // Argumentos de linha de comando para o programa (vazio por padrão)
             "stopAtEntry": false,     // Se true, o programa parará na entrada da função principal
             "cwd": "${workspaceFolder}",  // Diretório de trabalho atual do programa
             "environment": [],        // Variáveis de ambiente a serem definidas para o programa

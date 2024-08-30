@@ -62,7 +62,7 @@ int value(void) {
         literal();
     }
     else {
-        parserError("value(); Token desconhecido");
+        parserError("value(); Token inválido");
     } return 0;
 }
 
@@ -72,7 +72,9 @@ int object(void) {
             validateCurrentToken("}");
             return 0;
         }
+        identCount += 3;
         members();
+        identCount -= 3;
     } validateCurrentToken("}");
     return 0;
 }
@@ -83,24 +85,23 @@ int array(void) {
             validateCurrentToken("]");
             return 0;
         }
+        identCount += 3;
         values();
+        identCount -= 3;
     } validateCurrentToken("]");
     return 0;
 }
 
 int values(void) {
-    identCount += 2;
     value();
     if (Token_type(currentToken) == COMMA) {
         validateCurrentToken(",");
         values();
     }
-    identCount -= 2;
     return true;
 }
 
 int members(void) {
-    identCount += 2;
     key();
     validateCurrentToken(":");
     value();
@@ -108,7 +109,6 @@ int members(void) {
         validateCurrentToken(",");
         members();
     }
-    identCount -= 2;
     return true;
 }
 

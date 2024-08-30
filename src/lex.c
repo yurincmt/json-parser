@@ -160,6 +160,9 @@ int firstTokenChar(char c) {
         case '0' ... '9' :
             return NUMBER;
             break;
+
+        case EOF:
+            exit(EXIT_SUCCESS);
         
         default:
             // lexError("firstTokenChar(); Unknow first token char");
@@ -176,7 +179,8 @@ Token* next_token(FILE* fptr) {
     if (c == '\n') ++LINECOUNTER;
  
     // ignora os caracteres não printáveis
-    while (isspace(c)) c = fgetc(fptr);
+    while (isspace(c))
+        c = fgetc(fptr);
     
     ungetc(c, fptr);
 
