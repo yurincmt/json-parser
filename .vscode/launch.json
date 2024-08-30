@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",  // Nome da configuração de depuração
+            "type": "cppdbg",         // Tipo de depurador
+            "request": "launch",      // Tipo de solicitação de depuração: "launch" ou "attach"
+            "program": "${workspaceFolder}/src/${fileBasenameNoExtension}",  // Caminho para o executável que será depurado
+            "args": ["${workspaceFolder}/data/tests/step2/invalid2.json"],               // Argumentos de linha de comando para o programa (vazio por padrão)
+            "stopAtEntry": false,     // Se true, o programa parará na entrada da função principal
+            "cwd": "${workspaceFolder}",  // Diretório de trabalho atual do programa
+            "environment": [],        // Variáveis de ambiente a serem definidas para o programa
+            "externalConsole": false,  // Se true, usa um console externo para entrada/saída do programa
+            "MIMode": "gdb",          // Modo de interação: "gdb" para o GNU Debugger
+            "setupCommands": [
+                {
+                    "description": "Habilita formatação de impressão de Python para gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "C/C++: gcc build active file",  // Tarefa de pré-lançamento para compilar o código
+            "miDebuggerPath": "/usr/bin/gdb",  // Caminho para o depurador gdb (ajuste conforme necessário)
+            "logging": {          // Configurações de registro
+                "engineLogging": false
+            }
+        }
+    ]
+}
