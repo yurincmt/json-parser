@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "parser.h"
 
+int LINECOUNTER = 0;
+
 FILE* openFile(char const* filename) {
     FILE* fptr = NULL;
 
@@ -17,6 +19,5 @@ int main(int argc, char const *argv[])
     FILE* fptr = openFile(filename);
 
     parser(fptr);
-
     return 0;
 }

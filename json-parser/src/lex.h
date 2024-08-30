@@ -14,8 +14,8 @@ typedef enum lextokentype {
     LITERAL,         // true false null
     NUMBER,          // [0-9]+
     DELIMITER,       // [({])],:
+    INVALID,
 } LexTokenType;
-
 
 /**
  * Operações com o 'currentToken'
@@ -32,6 +32,7 @@ Token* get_delimiter(FILE* fptr);
 Token* get_string(FILE* fptr);
 Token* get_literalName(FILE* fptr);
 Token* get_number(FILE* fptr);
+Token* get_invalidToken(FILE* fptr);
 int firstTokenChar(char c);
 Token* next_token(FILE* fptr);
 int lex(char const * filename);

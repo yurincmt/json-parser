@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include "lex.h"
 
+extern int LINECOUNTER;
+
  struct token {
     char* token;
     LexTokenType tokenType;
@@ -24,7 +26,6 @@ char* STRTOKENTYPE[9] = {
 char* strTokenType(Token* tk) {
     return STRTOKENTYPE[tk->tokenType];
 }
-
 char* Token_token(Token* tk) {
     return tk->token;
 }
@@ -40,7 +41,7 @@ void tokenPrint(Token* token) {
 }
 
 void lexError(const char* dbmsg) {
-    fprintf(stderr, "Syntax error: %s\n", dbmsg);
+    fprintf(stderr, "Lexer Error: %s\n", dbmsg);
     exit(EXIT_FAILURE);
 }
 
@@ -117,6 +118,18 @@ Token* get_number(FILE* fptr){
     return tokenAlloc(tmptoken, tokenlen, NUMBER);
 }
 
+Token* get_invalidToken(FILE* fptr) {
+    char buffer[128], c;
+    int tokenlen = 0;
+
+    while (!isspace(c = fgetc(fptr))) {
+        buffer[tokenlen++] = c;
+    }
+    buffer[tokenlen++] = '\0';
+
+    return tokenAlloc(buffer, tokenlen, INVALID);
+}
+
 int firstTokenChar(char c) {
     // Verifica o primeiro char do token e retorn o seu tipo;
     switch (c) {
@@ -160,6 +173,8 @@ int firstTokenChar(char c) {
 Token* next_token(FILE* fptr) {
     char c = fgetc(fptr);
 
+    if (c == '\n') ++LINECOUNTER;
+ 
     // ignora os caracteres não printáveis
     while (isspace(c)) c = fgetc(fptr);
     
@@ -179,7 +194,8 @@ Token* next_token(FILE* fptr) {
             return get_number(fptr);
             break;
         default:
-            return NULL;
+            return get_invalidToken(fptr);
+            // lexError("Token invalido");
     }
 }
 
@@ -196,4 +212,5 @@ int lex(char const * filename) {
             tokenPrint(current_token);
         }
     }
+    return 0;
 }

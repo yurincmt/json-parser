@@ -11,19 +11,41 @@
 Token* currentToken = NULL;
 int identCount = 0;
 FILE* globalFptr = NULL;
+extern int LINECOUNTER;
+
+int parser(FILE* fptr) {
+    globalFptr = fptr;
+    // currentToken = next_token(fptr);    // Pega o primeiro token do arquivo
+
+    if ((currentToken = next_token(fptr)) != NULL) {
+        json();
+        // printf("LINECOUNTER: %d\n", LINECOUNTER);
+    } else {
+        parserError("*.json invalido");
+    }
+    return 0;
+}
 
 FILE* parserFile(void) {
     return globalFptr; 
 }
 
 void parserError(char* dbmsg) {
-    fprintf(stderr, "Semantic error: %s\n", dbmsg);
+    fprintf(stderr, "Parser Error: %s. currentToken{%s}\n", dbmsg, Token_token(currentToken));
     exit(EXIT_FAILURE);
 }
 
 int json(void) {
-    value();
-    return true;
+    int TOKENTYPE = Token_type(currentToken);
+
+    if (TOKENTYPE == LEFTCURLYBRACKET) {
+        object();
+    } else if (TOKENTYPE == LEFTSQUAREBRACKET) {
+        array();
+    } else {
+        parserError("*.json deve ser um object ou array");
+    }
+    return 0;
 }
 
 int value(void) {
@@ -34,42 +56,51 @@ int value(void) {
         array();
     } else if (TOKENTYPE == STRING) {
         string();
-    } else if (TOKENTYPE == LITERAL) {
-        literal();
     } else if (TOKENTYPE == NUMBER) {
         number();
-    } else {
-        parserError("value(); Token desconhecido");
+    } else if (TOKENTYPE == LITERAL) {
+        literal();
     }
+    else {
+        parserError("value(); Token desconhecido");
+    } return 0;
 }
 
 int object(void) {
-    identCount += 4;
     if (validateCurrentToken("{")) {
+        if (Token_type(currentToken) == RIGHTCURLYBRACKET) {
+            validateCurrentToken("}");
+            return 0;
+        }
         members();
     } validateCurrentToken("}");
-    identCount -= 4;
-    return true;
+    return 0;
 }
 
 int array(void) {
-    identCount += 4;
     if (validateCurrentToken("[")) {
+        if (Token_type(currentToken) == RIGHTSQUAREBRACKET) {
+            validateCurrentToken("]");
+            return 0;
+        }
         values();
     } validateCurrentToken("]");
-    identCount -= 4;
-    return true;
+    return 0;
 }
 
 int values(void) {
+    identCount += 2;
     value();
     if (Token_type(currentToken) == COMMA) {
         validateCurrentToken(",");
         values();
-    }return true;
+    }
+    identCount -= 2;
+    return true;
 }
 
 int members(void) {
+    identCount += 2;
     key();
     validateCurrentToken(":");
     value();
@@ -77,6 +108,7 @@ int members(void) {
         validateCurrentToken(",");
         members();
     }
+    identCount -= 2;
     return true;
 }
 
@@ -124,11 +156,4 @@ int validateCurrentToken(char* tokenMustBe) {
     sprintf(dbmsg, "validateCurrentToken(); Token esperado {%s}, token recebido {%s}", tokenMustBe, Token_token(currentToken));
     parserError(dbmsg);
     exit(EXIT_FAILURE);
-}
-
-void parser(FILE* fptr) {
-    globalFptr = fptr;
-    currentToken = next_token(fptr);    // Pega o primeiro token do arquivo
-
-    json();
 }

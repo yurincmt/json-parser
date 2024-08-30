@@ -11,7 +11,7 @@ int key(void);
 int string(void);
 int literal(void);
 int number(void);
-void parser(FILE* fptr);
+int parser(FILE* fptr);
 void parserError(char* dbmsg);
 int validateCurrentToken(char* tokenMustBe);
 FILE* parserFile(void);
