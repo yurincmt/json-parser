@@ -20,7 +20,6 @@ typedef enum lextokentype {
 /**
  * Operações com o 'currentToken'
  */
-char* strTokenType(Token* tk);
 char* Token_token(Token* tk);
 int Token_type(Token* tk);
 int Token_equalc(Token* tk, const char chr);     // verifica se o token atual é iqual o caractere do parâmetro

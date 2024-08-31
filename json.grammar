@@ -8,8 +8,9 @@ json            --> <object> | <array>
                   | <key> ":" <value>
                   |
 
-<array>         --> "[" <values> "]"
-                  | "[" "]"
+<array>         --> "[" "]"
+                  | "[" <value> "]"
+                  | "[" <value> "," <values> "]"
 
 <values>        --> <value> "," <values
                   | <value>

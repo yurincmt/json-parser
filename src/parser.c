@@ -8,10 +8,12 @@
 #define true 1
 #define DEBUG 1
 
+extern int LINECOUNTER;
+extern const char* STRTOKENTYPE[9];
+
 Token* currentToken = NULL;
 int identCount = 0;
 FILE* globalFptr = NULL;
-extern int LINECOUNTER;
 
 int parser(FILE* fptr) {
     globalFptr = fptr;
@@ -45,7 +47,74 @@ int json(void) {
     } else {
         parserError("*.json deve ser um object ou array");
     }
-    return 0;
+    return 1;
+}
+
+int object(void) {
+    if (validateCurrentToken("{")) {
+        if (Token_type(currentToken) == RIGHTCURLYBRACKET) {
+            validateCurrentToken("}");
+            return 0;
+        }
+        identCount += 3;
+        members();
+        identCount -= 3;
+    } validateCurrentToken("}");
+    return 1;
+}
+
+int members(void) {
+    key();
+    validateCurrentToken(":");
+    value();
+    if (Token_type(currentToken) == COMMA) {
+        validateCurrentToken(",");
+        members();
+    }
+    return 1;
+}
+
+int key(void) {
+    string();
+    return 1;
+}
+
+int array(void) {
+
+    validateCurrentToken("[");
+
+    if (value()) {
+        if (Token_type(currentToken) == COMMA) {
+            validateCurrentToken(",");
+            if (!values()) {
+                parserError("Esperava-se <values>");
+            }
+        }
+    }
+    validateCurrentToken("]");
+    
+    // if (validateCurrentToken("[")) {
+    //     if (Token_type(currentToken) == RIGHTSQUAREBRACKET) {
+    //         validateCurrentToken("]");
+    //         return 0;
+    //     }
+    //     identCount += 3;
+    //     values();
+    //     identCount -= 3;
+    // } validateCurrentToken("]");
+    return 1;
+}
+
+int values(void) {
+    if (!value()) {
+        parserError("Esperava-se um <value>");
+    }
+
+    if (Token_type(currentToken) == COMMA) {
+        validateCurrentToken(",");
+        values();
+    }
+    return 1;
 }
 
 int value(void) {
@@ -62,59 +131,8 @@ int value(void) {
         literal();
     }
     else {
-        parserError("value(); Token inválido");
-    } return 0;
-}
-
-int object(void) {
-    if (validateCurrentToken("{")) {
-        if (Token_type(currentToken) == RIGHTCURLYBRACKET) {
-            validateCurrentToken("}");
-            return 0;
-        }
-        identCount += 3;
-        members();
-        identCount -= 3;
-    } validateCurrentToken("}");
-    return 0;
-}
-
-int array(void) {
-    if (validateCurrentToken("[")) {
-        if (Token_type(currentToken) == RIGHTSQUAREBRACKET) {
-            validateCurrentToken("]");
-            return 0;
-        }
-        identCount += 3;
-        values();
-        identCount -= 3;
-    } validateCurrentToken("]");
-    return 0;
-}
-
-int values(void) {
-    value();
-    if (Token_type(currentToken) == COMMA) {
-        validateCurrentToken(",");
-        values();
-    }
-    return true;
-}
-
-int members(void) {
-    key();
-    validateCurrentToken(":");
-    value();
-    if (Token_type(currentToken) == COMMA) {
-        validateCurrentToken(",");
-        members();
-    }
-    return true;
-}
-
-int key(void) {
-    string();
-    return true;
+        return 0;
+    } return 1;
 }
 
 int string(void) {
@@ -147,7 +165,7 @@ int validateCurrentToken(char* tokenMustBe) {
     char dbmsg[128];
     if (!strcmp(Token_token(currentToken), tokenMustBe)) {
         if (DEBUG) {
-            sprintf(dbmsg, "[Validando Token] TokenType: {%s}, Token: {%s}", strTokenType(currentToken), Token_token(currentToken));
+            sprintf(dbmsg, "[Validando Token] TokenType: {%s}, Token: {%s}", STRTOKENTYPE[Token_type(currentToken)], Token_token(currentToken));
             printf("%*s\n", strlen(dbmsg)+identCount, dbmsg);
         }
         currentToken = next_token(parserFile());
@@ -155,5 +173,4 @@ int validateCurrentToken(char* tokenMustBe) {
     }
     sprintf(dbmsg, "validateCurrentToken(); Token esperado {%s}, token recebido {%s}", tokenMustBe, Token_token(currentToken));
     parserError(dbmsg);
-    exit(EXIT_FAILURE);
 }

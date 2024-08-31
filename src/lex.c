@@ -4,14 +4,7 @@
 #include <ctype.h>
 #include "lex.h"
 
-extern int LINECOUNTER;
-
- struct token {
-    char* token;
-    LexTokenType tokenType;
-};
-
-char* STRTOKENTYPE[9] = {
+const char* STRTOKENTYPE[9] = {
     "LEFTCURLYBRACKET",
     "RIGHTCURLYBRACKET",
     "LEFTSQUAREBRACKET",
@@ -23,9 +16,13 @@ char* STRTOKENTYPE[9] = {
     "NUMBER",
 };
 
-char* strTokenType(Token* tk) {
-    return STRTOKENTYPE[tk->tokenType];
-}
+int LINECOUNTER = 0;
+
+ struct token {
+    char* token;
+    LexTokenType tokenType;
+};
+
 char* Token_token(Token* tk) {
     return tk->token;
 }
@@ -122,16 +119,22 @@ Token* get_invalidToken(FILE* fptr) {
     char buffer[128], c;
     int tokenlen = 0;
 
-    while (!isspace(c = fgetc(fptr))) {
+    while (c != EOF && !isspace(c = fgetc(fptr))) {
         buffer[tokenlen++] = c;
     }
     buffer[tokenlen++] = '\0';
 
+    if (strlen(buffer) == 0) return NULL;
+
     return tokenAlloc(buffer, tokenlen, INVALID);
 }
 
+/**
+ * Verifica o primeiro char do token e retorn o seu tipo;
+ * 
+ * Função chamada exclusivamente pela next_token()
+ */
 int firstTokenChar(char c) {
-    // Verifica o primeiro char do token e retorn o seu tipo;
     switch (c) {
         case '{':
         case '}':
@@ -162,7 +165,7 @@ int firstTokenChar(char c) {
             break;
 
         case EOF:
-            exit(EXIT_SUCCESS);
+            return -1;
         
         default:
             // lexError("firstTokenChar(); Unknow first token char");

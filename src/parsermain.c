@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "parser.h"
 
-int LINECOUNTER = 0;
 
 FILE* openFile(char const* filename) {
     FILE* fptr = NULL;
