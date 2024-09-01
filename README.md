@@ -10,23 +10,30 @@ A ideia de construção desse analisador de arquivo JSON veio do desafio #02 do 
 ## Experimente em Sua Máquina
 **Instale as Dependências**
 
+#### Clone o repositório
+
     sudo apt install build-essential
 
-Certifique-se de executar os comandos **make** apenas no diretório raiz do projeto.
+> Os comando make devem ser executado no diretório raiz do projeto (onde o arquivo Makefile se encontra).
 
- **Criar binário** 
+ **Compilar binário** 
 
     make build
+
+**Execute alguns testes**
+
+No diretório data/ podem ser encontrados alguns arquivos JSON para testes, arquivos válidos e inválidos.
+
+    ./jparser /path/to/file/*.json
 
 **Instalar binário na máquina**
 
     make install
 
-**Desinstalar binário na máquina**
+**Desinstalar da máquina**
 
     make uninstall
 
 ## Estrutura do Projeto
 
 ## Json parser em ação!
-
