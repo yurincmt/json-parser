@@ -24,7 +24,7 @@ Certifique-se de executar os comandos **make** apenas no diretório raiz do proj
 
 **Desinstalar binário na máquina**
 
-    make unistall
+    make uninstall
 
 ## Estrutura do Projeto
 
