@@ -16,7 +16,9 @@ const char* STRTOKENTYPE[9] = {
     "NUMBER",
 };
 
-int LINECOUNTER = 0;
+Token* globalCurrentToken = NULL;
+FILE* globalFptr = NULL;
+int globalFileCounter = 0;
 
  struct token {
     char* token;
@@ -24,13 +26,60 @@ int LINECOUNTER = 0;
 };
 
 char* Token_token(Token* tk) {
-    return tk->token;
+    return (!tk) ? NULL : tk->token;
 }
 int Token_type(Token* tk) {
-    return tk->tokenType;
+    return (!tk) ? -1 : tk->tokenType;
 }
-int Token_chrmpc(Token* tk, const char c) {
-    return !strncmp(tk->token, &c, 1);
+
+/**
+ * 
+*/
+int lex(char const * filename) {
+    FILE* fptr = NULL;
+
+    if ((fptr  = fopen(filename, "r")) == NULL) {
+        lexError("lex() function");
+    } else {
+        // enquando houver token para ver visto, pegar o próximo token;
+
+        while ((globalCurrentToken = next_token(fptr))) {
+            tokenPrint(globalCurrentToken);
+        }
+    }
+    return 0;
+}
+
+/**
+ * Pega o próximo token existente no arquivo
+ */
+Token* next_token(FILE* fptr) {
+    char c = fgetc(fptr);
+
+    if (c == '\n') ++globalFileCounter;
+ 
+    // ignora os caracteres não printáveis
+    while (isspace(c))
+        c = fgetc(fptr);
+    
+    ungetc(c, fptr);
+
+    switch (firstTokenChar(c)) {
+        case DELIMITER:
+            return get_delimiter(fptr);
+            break;
+        case STRING:
+            return get_string(fptr);
+            break;
+        case LITERAL:
+            return get_literalName(fptr);
+            break;
+        case NUMBER:
+            return get_number(fptr);
+            break;
+        default:
+            return get_invalidToken(fptr);
+    }
 }
 
 void tokenPrint(Token* token) {
@@ -112,6 +161,10 @@ Token* get_number(FILE* fptr){
     } ungetc(c, fptr);
     tmptoken[tokenlen++] = '\0';
 
+    if (tmptoken[0] == '0')
+        return tokenAlloc(tmptoken, tokenlen, INVALID);
+
+
     return tokenAlloc(tmptoken, tokenlen, NUMBER);
 }
 
@@ -119,7 +172,7 @@ Token* get_invalidToken(FILE* fptr) {
     char buffer[128], c;
     int tokenlen = 0;
 
-    while (c != EOF && !isspace(c = fgetc(fptr))) {
+    while (!isspace(c = fgetc(fptr)) && c != EOF) {
         buffer[tokenlen++] = c;
     }
     buffer[tokenlen++] = '\0';
@@ -164,60 +217,7 @@ int firstTokenChar(char c) {
             return NUMBER;
             break;
 
-        case EOF:
+        default:
             return -1;
-        
-        default:
-            // lexError("firstTokenChar(); Unknow first token char");
-            break;
     }
-}
-
-/**
- * Pega o próximo token existente no arquivo
- */
-Token* next_token(FILE* fptr) {
-    char c = fgetc(fptr);
-
-    if (c == '\n') ++LINECOUNTER;
- 
-    // ignora os caracteres não printáveis
-    while (isspace(c))
-        c = fgetc(fptr);
-    
-    ungetc(c, fptr);
-
-    switch (firstTokenChar(c)) {
-        case DELIMITER:
-            return get_delimiter(fptr);
-            break;
-        case STRING:
-            return get_string(fptr);
-            break;
-        case LITERAL:
-            return get_literalName(fptr);
-            break;
-        case NUMBER:
-            return get_number(fptr);
-            break;
-        default:
-            return get_invalidToken(fptr);
-            // lexError("Token invalido");
-    }
-}
-
-
-int lex(char const * filename) {
-    FILE* fptr = NULL;
-
-    if ((fptr  = fopen(filename, "r")) == NULL) {
-        lexError("lex() function");
-    } else {
-        // enquando houver token para ver visto, pegar o próximo token;
-        Token* current_token = NULL;
-        while ((current_token = next_token(fptr))) {
-            tokenPrint(current_token);
-        }
-    }
-    return 0;
 }

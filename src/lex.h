@@ -22,7 +22,7 @@ typedef enum lextokentype {
  */
 char* Token_token(Token* tk);
 int Token_type(Token* tk);
-int Token_equalc(Token* tk, const char chr);     // verifica se o token atual é iqual o caractere do parâmetro
+// int Token_equalc(Token* tk, const char chr);     // verifica se o token atual é iqual o caractere do parâmetro
 
 void tokenPrint(Token* token);
 void lexError(const char* dbmsg);
