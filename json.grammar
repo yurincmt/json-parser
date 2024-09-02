@@ -12,8 +12,8 @@ json            --> <object> | <array>
                   | "[" <value> "]"
                   | "[" <value> "," <values> "]"
 
-<values>        --> <value> "," <values
-                  | <value>
+<values>        --> <value>
+                  | <value> "," <values
 
 <value>         --> <object>? <array>? <string>? <number>? <literal>?
 
