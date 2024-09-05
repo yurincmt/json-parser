@@ -15,6 +15,11 @@ extern int LINECOUNTER;
 
 int identCount = 0;
 
+
+/**
+ * Recebe um arquivo arberto e faz análise sintática dele de acordo com a gramática JSON.
+ *  - Recebe um arquivo aberto como parâmetro.
+ */
 int parser(FILE* fptr) {
     globalFptr = fptr;
     // currentToken = next_token(fptr);    // Pega o primeiro token do arquivo
@@ -115,7 +120,7 @@ int value(void) {
         array();
     } else if (TOKENTYPE == STRING) {
         string();
-    } else if (TOKENTYPE == NUMBER) {
+    } else if (TOKENTYPE == INTEGER || TOKENTYPE == FLOAT) {
         number();
     } else if (TOKENTYPE == LITERAL) {
         literal();
@@ -140,10 +145,13 @@ int literal(void) {
 }
 
 int number(void) {
-    if(Token_type(globalCurrentToken) == NUMBER) {
-        validateCurrentToken(Token_token(globalCurrentToken));
+    if (validateCurrentToken(Token_token(globalCurrentToken)))
         return retok;
-    } reterr;
+
+    if (validateCurrentToken(Token_token(globalCurrentToken)))
+        return retok;
+    
+    reterr;
 }
 
 /**
@@ -158,13 +166,11 @@ int validateCurrentToken(char* tokenMustBe) {
     char dbmsg[128];
     if (!strcmp(Token_token(globalCurrentToken), tokenMustBe)) {
         if (DEBUG) {
-            sprintf(dbmsg, "[Validando Token] TokenType: {%s}, Token: {%s}", STRTOKENTYPE[Token_type(globalCurrentToken)], Token_token(globalCurrentToken));
+            sprintf(dbmsg, "[Validando Token] TokenType{%s}, Token{%s}", STRTOKENTYPE[Token_type(globalCurrentToken)], Token_token(globalCurrentToken));
             printf("%*s\n", strlen(dbmsg)+identCount, dbmsg);
         }
         globalCurrentToken = next_token(globalFptr);
         return retok;
     }
-    // sprintf(dbmsg, "validateCurrentToken(); Token esperado {%s}, token recebido {%s}", tokenMustBe, Token_token(currentToken));
-    // parserError(dbmsg);
     return reterr;
 }
