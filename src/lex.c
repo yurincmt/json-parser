@@ -5,10 +5,12 @@
 #include <pcre.h>
 #include "lex.h"
 
+
 struct token {
     char* token;
     LexTokenType tokenType;
 };
+
 
 const char* STRTOKENTYPE[] = {
     "LEFTCURLYBRACKET",
@@ -23,6 +25,7 @@ const char* STRTOKENTYPE[] = {
     "FLOAT"
 };
 
+
 const char* RULES[] = {
     "^\\{",
     "^\\}",
@@ -36,20 +39,26 @@ const char* RULES[] = {
     "^\\d+\\.\\d+"
 };
 
+
 Token* globalCurrentToken = NULL;
 FILE* globalFptr = NULL;
 int globalFileCounter = 0;
 static char globalLineBuffer[256];
 
+
 char* Token_token(Token* tk) {
     return (!tk) ? NULL : tk->token;
 }
+
+
 int Token_type(Token* tk) {
     return (!tk) ? -1 : tk->tokenType;
 }
 
+
 /**
- * 
+ * Recece um arquivo aberto e faz análise léxia dele de acordo com a gramática JSON.
+ *  - Recebe um arquivo aberto como parâmetro.
 */
 int lex(char const * filename) {
     FILE* fptr = NULL;
@@ -66,66 +75,20 @@ int lex(char const * filename) {
     return 0;
 }
 
-/**
- * Apaga os caracteres não printáveis à esquerda
- */
-void lstrip(char* buffer) {
-    int spaceCounter = 0;
-    while (isspace(buffer[spaceCounter])) ++spaceCounter;
-
-    memmove(buffer, &buffer[spaceCounter], strlen(buffer));
-}
-
-void getLineBuffer(FILE* fptr) {
-    char *s = fgets(globalLineBuffer, 256, fptr);
-    int len;
-
-    if (!s) return;
-
-    if (!strncmp(s, "\n", 1)) {
-        getLineBuffer(fptr);
-    } else {
-        len = strlen(s) -1;
-        if (globalLineBuffer[len] == '\n') globalLineBuffer[len] = '\0';
-    }
-
-}
-
-int match(const char *pattern, char *subject) {
-    char matchbuffer[32];
-    int erroffset;
-    int ovector[2]; // Vetor de offsets para correspondência
-    const char *error;
-
-    // puts(subject);
-
-    pcre *re = pcre_compile(pattern, 0, &error, &erroffset, NULL);
-    if (re == NULL) {
-        fprintf(stderr, "Regex erro compilation: %s at %d\n", error, erroffset);
-        return 0;
-    }
-
-    // Se não encontrou o padrão, retorna...
-    if (pcre_exec(re, NULL, subject, (int)strlen(subject), 0, 0, ovector, 30) <= 0) {
-        return 0;
-    }
-
-    pcre_free(re);
-    return ovector[1] - ovector[0];
-}
 
 /**
- * Pega o próximo token existente no arquivo
+ * Pega o próximo token existente no arquivo e o classifica de acordo com a gramática JSON.
+ *  - Recebe um arquivo aberto como parâmetro.
  */
 Token* next_token(FILE* fptr) {
     char matchtoken[128];
     int matchtokenlen;
 
-    if (strlen(globalLineBuffer) == 0) {
+    lstrip(globalLineBuffer);
+
+    if (strlen(globalLineBuffer) == 0 || globalLineBuffer[0] == '\n') {
         getLineBuffer(fptr);
     }
-
-    lstrip(globalLineBuffer);
 
     if (matchtokenlen = match(RULES[STRING], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
@@ -198,14 +161,71 @@ Token* next_token(FILE* fptr) {
     } 
 }
 
+
+/**
+ * Apaga os caracteres não printáveis à esquerda
+ */
+void lstrip(char* buffer) {
+    int spaceCounter = 0;
+    while (isblank(buffer[spaceCounter])) ++spaceCounter;
+
+    memmove(buffer, &buffer[spaceCounter], strlen(buffer));
+}
+
+
+/**
+ * Pega uma linha do arquivo que será analisada pelo lexer.
+ * 
+ * Em vez de carregar todo o arquivo em memória, o que exigiria mais memória em execution-time,
+ * essa implementação lê uma linha por vez.
+ * 
+ * Ignora as linhas em branco, sejam aquelas que tem só uma quebra de linha, ou sejam aquelas que
+ * possuem carateres em branco e uma quebra de linha.
+ */
+void getLineBuffer(FILE* fptr) {
+    char *s = fgets(globalLineBuffer, 256, fptr);
+    int len;
+
+    if (!s) return;
+
+    lstrip(globalLineBuffer);   // para linhas em branco com espaços seguida de um quebra de linha
+    if (!strncmp(s, "\n", 1)) {
+        getLineBuffer(fptr);
+    }
+}
+
+
+int match(const char *pattern, char *subject) {
+    int erroffset;
+    int ovector[2]; // Vetor de offsets para correspondência
+    const char *error;
+
+    pcre *re = pcre_compile(pattern, 0, &error, &erroffset, NULL);
+    if (re == NULL) {
+        fprintf(stderr, "Regex erro compilation: %s at %d\n", error, erroffset);
+        return 0;
+    }
+
+    // Se não encontrou o padrão, retorna...
+    if (pcre_exec(re, NULL, subject, (int)strlen(subject), 0, 0, ovector, 30) <= 0) {
+        return 0;
+    }
+
+    pcre_free(re);
+    return ovector[1] - ovector[0];
+}
+
+
 void tokenPrint(Token* token) {
     printf("Token: %s, Type: %s\n", token->token, STRTOKENTYPE[token->tokenType]);
 }
+
 
 void lexError(const char* dbmsg) {
     fprintf(stderr, "Lexer Error: %s\n", dbmsg);
     exit(EXIT_FAILURE);
 }
+
 
 Token* tokenAlloc(char* tmptoken, int tokenlen, int tokenType) {
     Token* newTokenPtr = malloc(sizeof(Token));

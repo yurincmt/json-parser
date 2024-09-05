@@ -36,5 +36,8 @@ Token* get_invalidToken(FILE* fptr);
 int firstTokenChar(char c);
 Token* next_token(FILE* fptr);
 int lex(char const * filename);
+void lstrip(char* buffer);
+void getLineBuffer(FILE* fptr);
+int match(const char *pattern, char *subject);
 
 #endif
