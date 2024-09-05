@@ -8,29 +8,35 @@ Dito isso, o JSON Parser seria, basicamente, é um verificardor de arquivo *.jso
 A ideia de construção desse analisador de arquivo JSON veio do desafio #02 do [Coding Challenges](https://codingchallenges.fyi/challenges/challenge-json-parser).
 
 ## Experimente em Sua Máquina
-**Instale as Dependências**
 
 #### Clone o repositório
 
-    sudo apt install build-essential
+    git clone https://github.com/yurincmt/json-parser.git
+
+#### Instale as Dependências
+
+    sudo apt install build-essential libpcre3 libpcre3-dev
+
+* build-essential instalará as principais ferramentas para fazer compilações em sua máquina
+* libpcre3 instalará a biblioteca de regex perl para C
 
 > Os comando make devem ser executado no diretório raiz do projeto (onde o arquivo Makefile se encontra).
 
- **Compilar binário** 
+#### Compilar binário
 
     make build
 
-**Execute alguns testes**
+#### Execute alguns testes
 
 No diretório data/ podem ser encontrados alguns arquivos JSON para testes, arquivos válidos e inválidos.
 
-    ./jparser /path/to/file/*.json
+    ./jparser data/input.json
 
-**Instalar binário na máquina**
+#### Instalar binário na máquina
 
     make install
 
-**Desinstalar da máquina**
+#### Desinstalar da máquina
 
     make uninstall
 
