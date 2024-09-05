@@ -67,8 +67,9 @@ int lex(char const * filename) {
         lexError("lex() function");
     } else {
 
-        // enquando houver token para ver visto, pegar o próximo token;
-        while (!feof(fptr) && (globalCurrentToken = next_token(fptr))) {
+        // Enquanto não for o final do arquivo
+        // && globalCurrentToken não for do tipo INVALID
+        while (!feof(fptr) && (globalCurrentToken = next_token(fptr))->tokenType != INVALID) {
             tokenPrint(globalCurrentToken);
         }
     }
@@ -158,7 +159,10 @@ Token* next_token(FILE* fptr) {
         // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, INTEGER);
-    } 
+    } else {
+        strcpy(matchtoken, globalLineBuffer);
+        return tokenAlloc(matchtoken, strcspn(globalLineBuffer, "\n"), INVALID);
+    }
 }
 
 
