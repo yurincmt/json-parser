@@ -54,3 +54,4 @@ testerror:
 
 clean:
 	rm -rf ./jparser $(OBJ)
+	rm -rf ./src/a.out ./src/lex ./src/parser ./src/parsermain
