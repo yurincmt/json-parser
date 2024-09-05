@@ -12,7 +12,8 @@ typedef enum lextokentype {
     COLON,
     STRING,          // "..."
     LITERAL,         // true false null
-    NUMBER,          // [0-9]+
+    INTEGER,          // [0-9]+
+    FLOAT,
     DELIMITER,       // [({])],:
     INVALID,
 } LexTokenType;

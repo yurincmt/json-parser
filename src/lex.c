@@ -2,9 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <pcre.h>
 #include "lex.h"
 
-const char* STRTOKENTYPE[9] = {
+struct token {
+    char* token;
+    LexTokenType tokenType;
+};
+
+const char* STRTOKENTYPE[] = {
     "LEFTCURLYBRACKET",
     "RIGHTCURLYBRACKET",
     "LEFTSQUAREBRACKET",
@@ -13,17 +19,27 @@ const char* STRTOKENTYPE[9] = {
     "COLON",
     "STRING",
     "LITERAL",
-    "NUMBER",
+    "INTEGER",
+    "FLOAT"
+};
+
+const char* RULES[] = {
+    "^\\{",
+    "^\\}",
+    "^\\[",
+    "^\\]",
+    "^\\,",
+    "^\\:",
+    "^\"[A-Za-zÀ-ü0-9\\,\\:\\_\\{\\}\\[\\]\\-.! ]*\"",
+    "^true|false|null",
+    "^[1-9]\\d*",
+    "^\\d+\\.\\d+"
 };
 
 Token* globalCurrentToken = NULL;
 FILE* globalFptr = NULL;
 int globalFileCounter = 0;
-
- struct token {
-    char* token;
-    LexTokenType tokenType;
-};
+static char globalLineBuffer[256];
 
 char* Token_token(Token* tk) {
     return (!tk) ? NULL : tk->token;
@@ -41,9 +57,9 @@ int lex(char const * filename) {
     if ((fptr  = fopen(filename, "r")) == NULL) {
         lexError("lex() function");
     } else {
-        // enquando houver token para ver visto, pegar o próximo token;
 
-        while ((globalCurrentToken = next_token(fptr))) {
+        // enquando houver token para ver visto, pegar o próximo token;
+        while (!feof(fptr) && (globalCurrentToken = next_token(fptr))) {
             tokenPrint(globalCurrentToken);
         }
     }
@@ -51,35 +67,135 @@ int lex(char const * filename) {
 }
 
 /**
+ * Apaga os caracteres não printáveis à esquerda
+ */
+void lstrip(char* buffer) {
+    int spaceCounter = 0;
+    while (isspace(buffer[spaceCounter])) ++spaceCounter;
+
+    memmove(buffer, &buffer[spaceCounter], strlen(buffer));
+}
+
+void getLineBuffer(FILE* fptr) {
+    char *s = fgets(globalLineBuffer, 256, fptr);
+    int len;
+
+    if (!s) return;
+
+    if (!strncmp(s, "\n", 1)) {
+        getLineBuffer(fptr);
+    } else {
+        len = strlen(s) -1;
+        if (globalLineBuffer[len] == '\n') globalLineBuffer[len] = '\0';
+    }
+
+}
+
+int match(const char *pattern, char *subject) {
+    char matchbuffer[32];
+    int erroffset;
+    int ovector[2]; // Vetor de offsets para correspondência
+    const char *error;
+
+    // puts(subject);
+
+    pcre *re = pcre_compile(pattern, 0, &error, &erroffset, NULL);
+    if (re == NULL) {
+        fprintf(stderr, "Regex erro compilation: %s at %d\n", error, erroffset);
+        return 0;
+    }
+
+    // Se não encontrou o padrão, retorna...
+    if (pcre_exec(re, NULL, subject, (int)strlen(subject), 0, 0, ovector, 30) <= 0) {
+        return 0;
+    }
+
+    pcre_free(re);
+    return ovector[1] - ovector[0];
+}
+
+/**
  * Pega o próximo token existente no arquivo
  */
 Token* next_token(FILE* fptr) {
-    char c = fgetc(fptr);
+    char matchtoken[128];
+    int matchtokenlen;
 
-    if (c == '\n') ++globalFileCounter;
- 
-    // ignora os caracteres não printáveis
-    while (isspace(c))
-        c = fgetc(fptr);
-    
-    ungetc(c, fptr);
-
-    switch (firstTokenChar(c)) {
-        case DELIMITER:
-            return get_delimiter(fptr);
-            break;
-        case STRING:
-            return get_string(fptr);
-            break;
-        case LITERAL:
-            return get_literalName(fptr);
-            break;
-        case NUMBER:
-            return get_number(fptr);
-            break;
-        default:
-            return get_invalidToken(fptr);
+    if (strlen(globalLineBuffer) == 0) {
+        getLineBuffer(fptr);
     }
+
+    lstrip(globalLineBuffer);
+
+    if (matchtokenlen = match(RULES[STRING], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, STRING);
+
+    } else if (matchtokenlen = match(RULES[COLON], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, COLON);
+
+    } else if (matchtokenlen = match(RULES[COMMA], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, COMMA);
+
+    } else if (matchtokenlen = match(RULES[LEFTCURLYBRACKET], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, LEFTCURLYBRACKET);
+
+    } else if (matchtokenlen = match(RULES[RIGHTCURLYBRACKET], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, RIGHTCURLYBRACKET);
+
+    } else if (matchtokenlen = match(RULES[LEFTSQUAREBRACKET], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, LEFTSQUAREBRACKET);
+
+    } else if (matchtokenlen = match(RULES[RIGHTSQUAREBRACKET], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, RIGHTSQUAREBRACKET);
+
+    } else if (matchtokenlen = match(RULES[LITERAL], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, LITERAL);
+
+    } else if (matchtokenlen = match(RULES[FLOAT], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, FLOAT);
+    } else if (matchtokenlen = match(RULES[INTEGER], globalLineBuffer)) {
+        strncpy(matchtoken, globalLineBuffer, matchtokenlen);
+        matchtoken[matchtokenlen] = '\0';
+        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
+        memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
+        return tokenAlloc(matchtoken, matchtokenlen, INTEGER);
+    } 
 }
 
 void tokenPrint(Token* token) {
@@ -99,74 +215,6 @@ Token* tokenAlloc(char* tmptoken, int tokenlen, int tokenType) {
     return newTokenPtr;
 }
 
-Token* get_delimiter(FILE* fptr){
-    int TYPE = 0;
-    char c = fgetc(fptr);
-    switch (c) {
-    case '{':
-        TYPE = LEFTCURLYBRACKET; break;
-    case '}':
-        TYPE = RIGHTCURLYBRACKET; break;
-    case '[':
-        TYPE = LEFTSQUAREBRACKET; break;
-    case ']':
-        TYPE = RIGHTSQUAREBRACKET; break;
-    case ',':
-        TYPE = COMMA; break;
-    case ':':
-        TYPE = COLON; break;
-    default:
-        break;
-    }
-    return tokenAlloc(&c, 1, TYPE);
-}
-
-Token* get_string(FILE* fptr){
-    char tmptoken[128], c;
-    int tokenlen = 0;
-
-    tmptoken[tokenlen++] = fgetc(fptr);
-    while ((c = fgetc(fptr)) != '"') {
-        tmptoken[tokenlen++] = c;
-    }
-    tmptoken[tokenlen++] = c;
-    tmptoken[tokenlen++] = '\0';
-
-    return tokenAlloc(tmptoken, tokenlen, STRING);
-}
-
-Token* get_literalName(FILE* fptr){
-    char tmptoken[32], c;
-    int tokenlen = 0;
-
-    while (islower(c = fgetc(fptr)) && isalpha(c)) {
-        tmptoken[tokenlen++] = c;
-    } ungetc(c, fptr);
-    tmptoken[tokenlen++] = '\0';
-
-    if (!strncmp(tmptoken, "true", tokenlen)  ||
-        !strncmp(tmptoken, "false", tokenlen) ||
-        !strncmp(tmptoken, "null", tokenlen)) {
-        return tokenAlloc(tmptoken, tokenlen, LITERAL);
-    } lexError("get_literalName() fucntion");
-    return NULL;
-}
-
-Token* get_number(FILE* fptr){
-    char tmptoken[64], c;
-    int tokenlen = 0;
-
-    while (isdigit(c = fgetc(fptr)) || strchr("+-.", c)) {
-        tmptoken[tokenlen++] = c;
-    } ungetc(c, fptr);
-    tmptoken[tokenlen++] = '\0';
-
-    if (tmptoken[0] == '0')
-        return tokenAlloc(tmptoken, tokenlen, INVALID);
-
-
-    return tokenAlloc(tmptoken, tokenlen, NUMBER);
-}
 
 Token* get_invalidToken(FILE* fptr) {
     char buffer[128], c;
@@ -180,44 +228,4 @@ Token* get_invalidToken(FILE* fptr) {
     if (strlen(buffer) == 0) return NULL;
 
     return tokenAlloc(buffer, tokenlen, INVALID);
-}
-
-/**
- * Verifica o primeiro char do token e retorn o seu tipo;
- * 
- * Função chamada exclusivamente pela next_token()
- */
-int firstTokenChar(char c) {
-    switch (c) {
-        case '{':
-        case '}':
-        case '[':
-        case ']':
-        case ':':
-        case ',':
-            return DELIMITER;
-            break;
-
-        case '"':
-            return STRING;
-            break;
-
-        case 'f':
-        case 'n':
-        case 't':
-            return LITERAL;
-            break;
-
-        case '.':
-        case '-':
-        case '+':
-        case 'e':
-        case 'E':
-        case '0' ... '9' :
-            return NUMBER;
-            break;
-
-        default:
-            return -1;
-    }
 }
