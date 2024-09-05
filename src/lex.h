@@ -18,26 +18,21 @@ typedef enum lextokentype {
     INVALID,
 } LexTokenType;
 
+
 /**
- * Operações com o 'currentToken'
+ * Operações com o 'currentToken'. Necessárias no Parser.
  */
 char* Token_token(Token* tk);
 int Token_type(Token* tk);
-// int Token_equalc(Token* tk, const char chr);     // verifica se o token atual é iqual o caractere do parâmetro
 
+int lex(char const * filename);
+Token* next_token(FILE* fptr);
+int match(const char *pattern, char *subject);
 void tokenPrint(Token* token);
 void lexError(const char* dbmsg);
 Token* tokenAlloc(char* tmptoken, int tokenlen, int tokenType);
-Token* get_delimiter(FILE* fptr);
-Token* get_string(FILE* fptr);
-Token* get_literalName(FILE* fptr);
-Token* get_number(FILE* fptr);
 Token* get_invalidToken(FILE* fptr);
-int firstTokenChar(char c);
-Token* next_token(FILE* fptr);
-int lex(char const * filename);
 void lstrip(char* buffer);
 void getLineBuffer(FILE* fptr);
-int match(const char *pattern, char *subject);
 
 #endif
