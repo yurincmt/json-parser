@@ -30,7 +30,7 @@ int parser(FILE* fptr) {
     } else {
         parserError("*.json invalido");
     }
-    return 0;
+    return retok;
 }
 
 void parserError(char* dbmsg) {
@@ -127,21 +127,24 @@ int value(void) {
     }
     else {
         return reterr;
-    } return retok;
+    }
+    return retok;
 }
 
 int string(void) {
     if (Token_type(globalCurrentToken) == STRING) {
         validateCurrentToken(Token_token(globalCurrentToken));
         return retok;
-    } return reterr;
+    }
+    return reterr;
 }
 
 int literal(void) {
     if(Token_type(globalCurrentToken) == LITERAL) {
         validateCurrentToken(Token_token(globalCurrentToken));
         return retok;
-    } reterr;
+    } 
+    return reterr;
 }
 
 int number(void) {
@@ -151,7 +154,7 @@ int number(void) {
     if (validateCurrentToken(Token_token(globalCurrentToken)))
         return retok;
     
-    reterr;
+    return reterr;
 }
 
 /**
