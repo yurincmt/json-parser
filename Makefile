@@ -15,7 +15,7 @@ OBJ = $(C_SOURCE:.c=.o)
 build: jparser
 
 jparser: $(OBJ)
-	gcc -o $@ $(OBJ)
+	gcc -o $@ $(OBJ) -lpcre
 	rm -rf $(OBJ)
 
 ./src/parsermain.o: ./src/parsermain.c $(H_SOURCE)
@@ -48,8 +48,6 @@ debug: ./src/db
 
 
 test:
-
-testerror:
 	
 
 clean:
