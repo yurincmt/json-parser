@@ -1,0 +1,10 @@
+jparser
+a.out
+
+.vscode/
+.vscode/*
+
+src/lex
+src/parser
+src/lexmain
+src/parsermain
