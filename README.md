@@ -7,6 +7,12 @@ Dito isso, o JSON Parser seria, basicamente, é um verificardor de arquivo *.jso
 
 A ideia de construção desse analisador de arquivo JSON veio do desafio #02 do [Coding Challenges](https://codingchallenges.fyi/challenges/challenge-json-parser).
 
+### Todo
+
+- [] Melhorar as mensagens de erro, do lexer e do parser
+- [] Pegar e mostrar a linha de erro, quando ocorrer um erro, sinalizando onde o erro começa
+- [] Pegar apenas o token inválido quando ocorrer um erro
+
 ## Experimente em Sua Máquina
 
 #### Clone o repositório
