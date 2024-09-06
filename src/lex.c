@@ -154,10 +154,11 @@ Token* next_token(FILE* fptr) {
         // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, INTEGER);
-    } else {
+    } else if (!isspace(globalLineBuffer[0]) && !feof(globalFptr)){
         strcpy(matchtoken, globalLineBuffer);
         return tokenAlloc(matchtoken, strcspn(globalLineBuffer, "\n"), INVALID);
     }
+    return NULL;
 }
 
 
