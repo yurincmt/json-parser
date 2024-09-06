@@ -9,9 +9,9 @@ A ideia de construção desse analisador de arquivo JSON veio do desafio #02 do 
 
 ### Todo
 
-- [] Melhorar as mensagens de erro, do lexer e do parser
-- [] Pegar e mostrar a linha de erro, quando ocorrer um erro, sinalizando onde o erro começa
-- [] Pegar apenas o token inválido quando ocorrer um erro
+- [ ] Melhorar as mensagens de erro, do lexer e do parser
+- [ ] Pegar e mostrar a linha de erro, quando ocorrer um erro, sinalizando onde o erro começa
+- [ ] Pegar apenas o token inválido quando ocorrer um erro
 
 ## Experimente em Sua Máquina
 
