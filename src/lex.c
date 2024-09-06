@@ -57,21 +57,16 @@ int Token_type(Token* tk) {
 
 
 /**
- * Recece um arquivo aberto e faz análise léxia dele de acordo com a gramática JSON.
+ * Recece um arquivo aberto e faz análise léxica dele de acordo com a gramática JSON.
  *  - Recebe um arquivo aberto como parâmetro.
 */
-int lex(char const * filename) {
-    FILE* fptr = NULL;
+int lex(FILE* f) {
+    globalFptr = f;
 
-    if ((fptr  = fopen(filename, "r")) == NULL) {
-        lexError("lex() function");
-    } else {
-
-        // Enquanto não for o final do arquivo
-        // && globalCurrentToken não for do tipo INVALID
-        while (!feof(fptr) && (globalCurrentToken = next_token(fptr))->tokenType != INVALID) {
-            tokenPrint(globalCurrentToken);
-        }
+    // Enquanto não for o final do arquivo
+    // && globalCurrentToken não for do tipo INVALID
+    while (!feof(globalFptr) && (globalCurrentToken = next_token(globalFptr))->tokenType != INVALID) {
+        tokenPrint(globalCurrentToken);
     }
     return 0;
 }

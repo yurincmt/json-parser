@@ -25,7 +25,7 @@ typedef enum lextokentype {
 char* Token_token(Token* tk);
 int Token_type(Token* tk);
 
-int lex(char const * filename);
+int lex(FILE* f);
 Token* next_token(FILE* fptr);
 int match(const char *pattern, char *subject);
 void tokenPrint(Token* token);

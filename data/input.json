@@ -1,5 +1,14 @@
 [
-    "Comma after the close",
-    ["string", "value"],
-    "laststring"
+    "Comma after    the close",
+    [
+        "string"             ,
+        "value"
+    ]
+    
+    ,
+    "laststring",    {
+        "key0": false,
+        "nickname": "yurincmt"
+
+    }
 ]

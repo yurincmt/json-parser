@@ -12,10 +12,13 @@ FILE* openFile(char const* filename) {
 
 int main(int argc, char const *argv[])
 {
-    Token* a;
+    FILE* f = NULL;
+    
     char const * filename = (argv[1] ? argv[1] : "input.1"); 
     printf("filename: %s\n", filename);
 
-    lex(filename);
+    f = openFile(filename);
+
+    lex(f);
     return 0;
 }

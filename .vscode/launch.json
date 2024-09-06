@@ -5,8 +5,9 @@
             "name": "(gdb) Launch",  // Nome da configuração de depuração
             "type": "cppdbg",         // Tipo de depurador
             "request": "launch",      // Tipo de solicitação de depuração: "launch" ou "attach"
-            "program": "${workspaceFolder}/src/${fileBasenameNoExtension}",  // Caminho para o executável que será depurado
-            "args": ["${workspaceFolder}/data/test/fail13.json"],               // Argumentos de linha de comando para o programa (vazio por padrão)
+            "program": "${workspaceFolder}/src/lexer/${fileBasenameNoExtension}",  // Caminho para o executável que será depurado
+            // "program": "${workspaceFolder}/src/parser/${fileBasenameNoExtension}",  // Caminho para o executável que será depurado
+            "args": ["${workspaceFolder}/data/tests/step3/invalid.json"],    // Argumentos de linha de comando para o programa (vazio por padrão)
             "stopAtEntry": false,     // Se true, o programa parará na entrada da função principal
             "cwd": "${workspaceFolder}",  // Diretório de trabalho atual do programa
             "environment": [],        // Variáveis de ambiente a serem definidas para o programa
