@@ -17,8 +17,10 @@ int main(int argc, char const *argv[])
 
     FILE* fptr = openFile(filename);
 
-    lex(fptr);
-
-    // printf("lex status: %d\n", lex(fptr));
+    Token* token = NULL;
+    while ((token = lex(fptr))) {
+        tokenPrint(token);
+    }
+    
     return 0;
 }
