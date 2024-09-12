@@ -1,7 +1,17 @@
 ﻿## JSON Parser
 Construir um analisador JSON é uma maneira eficaz de aprender sobre técnicas de análise, que são úteis para uma variedade de aplicações, desde a interpretação de formatos de dados simples até o desenvolvimento de compiladores completos para linguagens de programação.
 
-O processo de análise do parser geralmente é dividido em duas etapas: análise léxica e análise sintática. A **análise léxica** é o processo de dividir uma sequência de caracteres em partes significativas, chamadas tokens e atribuí-los a suas devidas classes, de acordo com uma gramática. A **análise sintática** (também conhecida simplesmente como parsing) é o processo de examinar a lista de tokens para verificar se ela corresponde a uma gramática formal.
+O processo de análise do parser geralmente é dividido em duas etapas: análise léxica e análise sintática.
+
+A **análise léxica (scanner)** é o processo de dividir uma sequência de caracteres em partes significativas, chamadas tokens e atribuí-los a suas devidas classes, de acordo com uma gramática. São responsabilidades do scanner:
+
+- Leitura de código-fonte
+- Divisão em tokens
+- Filtragem de espaços em branco e comentários
+- Identificação de erros léxicos (quando o scanner encontrar uma sequência de caracteres que não corresponde a nenhum token válido da linguagem)
+- Alimentação do analisador sintático
+
+A **análise sintática** (também conhecida simplesmente como parsing) é o processo de examinar a lista de tokens para verificar se ela corresponde a uma gramática formal.
 
 Dito isso, o JSON Parser seria, basicamente, é um verificardor de arquivo *.json, com fim de determinar se o conteúdo do arquivo está em conformidade com a gramática JSON de arquivos.
 
@@ -11,7 +21,7 @@ A ideia de construção desse analisador de arquivo JSON veio do desafio #02 do 
 
 - [ ] Melhorar as mensagens de erro, do lexer e do parser
 - [ ] Pegar e mostrar a linha de erro, quando ocorrer um erro, sinalizando onde o erro começa
-- [ ] Pegar apenas o token inválido quando ocorrer um erro
+- [ ] Pegar o token inválido quando ocorrer um erro no analisador léxico
 
 ## Json parser em ação!
 
