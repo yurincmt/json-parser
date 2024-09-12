@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "parser.h"
 
-
 FILE* openFile(char const* filename) {
     FILE* fptr = NULL;
 
@@ -14,7 +13,6 @@ FILE* openFile(char const* filename) {
 int main(int argc, char const *argv[])
 {
     char const * filename = argv[1];
-    // filename = "input1.json";
     FILE* fptr = openFile(filename);
 
     parser(fptr);

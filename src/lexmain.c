@@ -11,14 +11,14 @@ FILE* openFile(char const* filename) {
 }
 
 int main(int argc, char const *argv[])
-{
-    FILE* f = NULL;
-    
-    char const * filename = (argv[1] ? argv[1] : "input.1"); 
-    printf("filename: %s\n", filename);
+{   
+    char const * filename = argv[1];
+    // printf("filename: %s\n", filename);
 
-    f = openFile(filename);
+    FILE* fptr = openFile(filename);
 
-    lex(f);
+    lex(fptr);
+
+    // printf("lex status: %d\n", lex(fptr));
     return 0;
 }
