@@ -5,6 +5,9 @@
 #include <pcre.h>
 #include "lex.h"
 
+#define retok 1
+#define reter 0
+
 
 struct token {
     char* token;
@@ -59,16 +62,19 @@ int Token_type(Token* tk) {
 /**
  * Recece um arquivo aberto e faz análise léxica dele de acordo com a gramática JSON.
  *  - Recebe um arquivo aberto como parâmetro.
+ * 
+ * Se o token é inválido, ou seja, não é uma string, literal, delimitador, ou número, o Lexer para e retorna
+ * um status de erro.
 */
 int lex(FILE* f) {
     globalFptr = f;
 
     // Enquanto não for o final do arquivo
     // && globalCurrentToken não for do tipo INVALID
-    while (!feof(globalFptr) && (globalCurrentToken = next_token(globalFptr))->tokenType != INVALID) {
+    while ((globalCurrentToken = next_token(globalFptr)) != NULL && globalCurrentToken->tokenType != INVALID) {
         tokenPrint(globalCurrentToken);
     }
-    return 0;
+    return (!globalCurrentToken) ? retok : reter;
 }
 
 
@@ -89,69 +95,59 @@ Token* next_token(FILE* fptr) {
     if (matchtokenlen = match(RULES[STRING], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, STRING);
 
     } else if (matchtokenlen = match(RULES[COLON], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, COLON);
 
     } else if (matchtokenlen = match(RULES[COMMA], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, COMMA);
 
     } else if (matchtokenlen = match(RULES[LEFTCURLYBRACKET], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, LEFTCURLYBRACKET);
 
     } else if (matchtokenlen = match(RULES[RIGHTCURLYBRACKET], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, RIGHTCURLYBRACKET);
 
     } else if (matchtokenlen = match(RULES[LEFTSQUAREBRACKET], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, LEFTSQUAREBRACKET);
 
     } else if (matchtokenlen = match(RULES[RIGHTSQUAREBRACKET], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, RIGHTSQUAREBRACKET);
 
     } else if (matchtokenlen = match(RULES[LITERAL], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, LITERAL);
 
     } else if (matchtokenlen = match(RULES[FLOAT], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, FLOAT);
     } else if (matchtokenlen = match(RULES[INTEGER], globalLineBuffer)) {
         strncpy(matchtoken, globalLineBuffer, matchtokenlen);
         matchtoken[matchtokenlen] = '\0';
-        // strcpy(globalLineBuffer, &globalLineBuffer[matchtokenlen]);
         memmove(globalLineBuffer, &globalLineBuffer[matchtokenlen], strlen(globalLineBuffer));
         return tokenAlloc(matchtoken, matchtokenlen, INTEGER);
     } else if (!isspace(globalLineBuffer[0]) && !feof(globalFptr)){
@@ -203,12 +199,12 @@ int match(const char *pattern, char *subject) {
     pcre *re = pcre_compile(pattern, 0, &error, &erroffset, NULL);
     if (re == NULL) {
         fprintf(stderr, "Regex erro compilation: %s at %d\n", error, erroffset);
-        return 0;
+        return reter;
     }
 
     // Se não encontrou o padrão, retorna...
     if (pcre_exec(re, NULL, subject, (int)strlen(subject), 0, 0, ovector, 30) <= 0) {
-        return 0;
+        return reter;
     }
 
     pcre_free(re);
