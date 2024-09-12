@@ -24,7 +24,7 @@ int parser(FILE* fptr) {
     globalFptr = fptr;
     // currentToken = next_token(fptr);    // Pega o primeiro token do arquivo
 
-    if ((globalCurrentToken = next_token(fptr)) != NULL) {
+    if ((globalCurrentToken = lex(fptr)) != NULL) {
         json();
         // printf("LINECOUNTER: %d\n", LINECOUNTER);
     } else {
@@ -158,7 +158,7 @@ int number(void) {
 }
 
 /**
- * O token atual só é movido para o próximo token a partir dessa função.
+ * O próximo Token do lexer só retornado se o Token atual tiver certo na gramática.
  * 
  * O parâmetro 'tokenMustBe' é o token atual esperado, de acordo com a gramática no arquivo json.grammar.
  */
@@ -172,7 +172,7 @@ int validateCurrentToken(char* tokenMustBe) {
             sprintf(dbmsg, "[Validando Token] TokenType{%s}, Token{%s}", STRTOKENTYPE[Token_type(globalCurrentToken)], Token_token(globalCurrentToken));
             printf("%*s\n", strlen(dbmsg)+identCount, dbmsg);
         }
-        globalCurrentToken = next_token(globalFptr);
+        globalCurrentToken = lex(globalFptr);
         return retok;
     }
     return reterr;
