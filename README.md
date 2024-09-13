@@ -3,7 +3,7 @@ Construir um analisador JSON é uma maneira eficaz de aprender sobre técnicas d
 
 O processo de análise do parser geralmente é dividido em duas etapas: análise léxica e análise sintática.
 
-A **análise léxica (scanner)** é o processo de dividir uma sequência de caracteres em partes significativas, chamadas tokens e atribuí-los a suas devidas classes, de acordo com uma gramática. São responsabilidades do scanner:
+A **análise léxica (scanner)** é o processo de dividir uma sequência de caracteres em partes significativas, chamadas de tokens e atribuí-los a suas devidas classes, de acordo com uma gramática. São responsabilidades do scanner:
 
 - Leitura de código-fonte
 - Divisão em tokens
@@ -11,9 +11,9 @@ A **análise léxica (scanner)** é o processo de dividir uma sequência de cara
 - Identificação de erros léxicos (quando o scanner encontrar uma sequência de caracteres que não corresponde a nenhum token válido da linguagem)
 - Alimentação do analisador sintático
 
-A **análise sintática** (também conhecida simplesmente como parsing) é o processo de examinar a lista de tokens para verificar se ela corresponde a uma gramática formal.
+A **análise sintática (parser)** é o processo de examinar a lista de tokens recebida do scanner para verificar se ela corresponde a uma gramática formal.
 
-Dito isso, o JSON Parser seria, basicamente, é um verificardor de arquivo *.json, com fim de determinar se o conteúdo do arquivo está em conformidade com a gramática JSON de arquivos.
+Dito isso, o JSON Parser, basicamente, é um verificardor de arquivo *.json, com fim de determinar se o conteúdo do arquivo está em conformidade com a gramática de arquivos JSON.
 
 A ideia de construção desse analisador de arquivo JSON veio do desafio #02 do [Coding Challenges](https://codingchallenges.fyi/challenges/challenge-json-parser).
 
@@ -25,6 +25,33 @@ A ideia de construção desse analisador de arquivo JSON veio do desafio #02 do 
 
 ## Json parser em ação!
 
+
+## Especificação da gramática JSON do projeto
+
+    json            --> <object> | <array>
+
+    <object>        --> "{" <members> "}"
+                      | "{" "}"
+
+    <members>       --> <key> ":" <value> "," <members>
+                      | <key> ":" <value>
+
+    <array>         --> "[" "]"
+                      | "[" <value> "]"
+                      | "[" <value> "," <values> "]"
+
+    <values>        --> <value>
+                      | <value> "," <values
+
+    <value>         --> <object> | <array> | <string> | <number> | <literal> |
+
+    <key>           --> <string>
+
+    <string>        --> "string"
+
+    <literal>       --> true | false | null
+
+    <number>        --> number
 
 ## Experimente em Sua Máquina
 
