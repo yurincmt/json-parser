@@ -1,0 +1,16 @@
+[
+    "Comma after    the close",
+    [
+        "string"             ,
+        "value",
+        "key": true
+    ]
+    
+    ,
+    "laststring",    {
+        "key0": false,
+        "nickname": "yurincmt"
+
+    }
+]   
+
