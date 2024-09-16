@@ -25,7 +25,7 @@ A ideia de construção desse analisador de arquivo JSON veio do desafio #02 do 
 
 ## Json parser em ação!
 
-![Screencast](https://github.com/user-attachments/assets/5b9e5b8c-1c26-4c58-9548-c43fa3fdcb17)
+https://github.com/user-attachments/assets/d8e5693c-fb4d-4469-af14-906dbecc7e69
 
 ## Especificação da gramática JSON do projeto
 
