@@ -1,0 +1,44 @@
+{
+    "company": "Tech Solutions Inc.",
+    "employees": [
+        {
+            "id": 1,
+            "name": "Alice Johnson",
+            "position": "Software Engineer",
+            "email": "alice.johnsontechsolutions.com",
+            "skills": ["Python", "JavaScript", "SQL"]
+        },
+        {
+            "id": 2,
+            "name": "Bob Smith",
+            "position": "Data Analyst",
+            "email": "bob.smithtechsolutions.com",
+            "skills": ["Excel", "R", "SQL"]
+        },
+        {
+            "id": 3,
+            "name": "Catherine Lee",
+            "position": "Project Manager",
+            "email": "catherine.leetechsolutions.com",
+            "skills": ["Leadership", "Agile", "Scrum"]
+        }
+    ],
+    "locations": {
+        "headquarters": {
+            "city": "New York",
+            "address": "1234 Tech Lane, NY 10001"
+        },
+        "branch_offices": [
+            {
+                "city": "San Francisco",
+                "address": "5678 Market St, CA 94103"
+            },
+            {
+                "city": "Austin",
+                "address": "9012 Tech Blvd, TX 73301"
+            }
+        ]
+    },
+    "isPublicCompany": false,
+    "foundedYear": 2010
+}
